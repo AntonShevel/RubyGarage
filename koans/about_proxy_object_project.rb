@@ -13,12 +13,29 @@ require File.expand_path(File.dirname(__FILE__) + '/neo')
 # of the Proxy class is given in the AboutProxyObjectProject koan.
 
 class Proxy
+  # WRITE CODE HERE
+  attr_reader :messages
   def initialize(target_object)
     @object = target_object
-    # ADD MORE CODE HERE
+    @messages = Array.new
   end
-
-  # WRITE CODE HERE
+  def method_missing(method_name, *args, &block)
+    if @object.respond_to?(method_name)
+      @messages.push(method_name)
+      @object.send(method_name, *args)
+    else
+      super
+    end
+  end
+  def number_of_times_called(method_name)
+    sum = 0
+    @messages.each { |item| sum+=1 if item==method_name}
+    sum
+  end
+  def called?(method_name)
+    @messages.include? method_name
+  end
+  @object
 end
 
 # The proxy object should pass the following Koan:
@@ -39,7 +56,7 @@ class AboutProxyObjectProject < Neo::Koan
     tv.channel = 10
     tv.power
 
-    assert_equal 10, tv.channel
+    assert_equal 10, tv.channel    
     assert tv.on?
   end
 
